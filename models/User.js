@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 const bcryptjs =  require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
-    name : string ,
-    email : {type: String, unique:true, require:true},
-    password : string,
-    role : { type:String,enum: ['admin','professionel','client'] ,default:'client'}
+    name: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['admin', 'professionel', 'client'], default: 'client' }
 })
 
 //Crypter le mot de passe
