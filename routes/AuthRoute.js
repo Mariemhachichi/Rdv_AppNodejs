@@ -1,39 +1,54 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const User = require('../models/User')
-const router = express.Router()
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/User');
+const router = express.Router();
 
-const SECRET_KEY = process.env.SECRET_KEY
+const SECRET_KEY = process.env.SECRET_KEY;
 
-//inscription utilisateur 
-router.post('/register', async(req, res)=>{
-    try{
-        const {name,email,password,role} = req.body
-        const user = new User({name,email,password,role})
-        await user.save()
-        return   res.status(201).send({message: "User saved", user})
-    }catch(error){
-        return    res.status(500).send({message:error.message})
+// Inscription utilisateur
+router.post('/register', async (req, res) => {
+    try {
+        const { name, email, password, role } = req.body;
+
+        // Hachage du mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ name, email, password: hashedPassword, role });
+
+        await user.save();
+        return res.status(201).send({ message: "Utilisateur enregistré", user });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
     }
-})
+});
 
-//conexion
-router.post('/login', async(req,res)=>{
-    try{
-    const {email,password} = req.body
-    const user = await User.findOne({email})
-    if (!user){
-        return   res.status(404).send({message:'user not found'})
-    }
-    const isValid =await user.comparePassword(password)
-    if(!isValid){
-        return  res.status(400).send({message:'invalid password !!'})
-    }
-    const token = await jwt.sign({userId:user._id},SECRET_KEY)
-    return   res.send({message:'user logged',token})
-} catch(error){
-    return res.status(400).send({message:error.message})
-}
-})
+// Connexion
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).send({ message: 'Utilisateur introuvable' });
+        }
 
-module.exports = router
+        // Vérification du mot de passe
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            return res.status(400).send({ message: 'Mot de passe incorrect' });
+        }
+
+        // Création du token JWT
+        const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+
+        // Retour du token dans la réponse
+        return res.status(200).send({
+            message: 'Connexion réussie',
+            token: token
+        });
+
+    } catch (error) {
+        return res.status(400).send({ message: error.message });
+    }
+});
+
+module.exports = router;

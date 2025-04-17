@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config();
 
+
 // Import des routes
 const authRoute = require('./routes/AuthRoute');
 const rdvRoute = require('./routes/RdvRoute');
+const dashboardRoute = require('./routes/dashboardRoute');
 
 const app = express();
 const Port = process.env.PORT || 9000;
@@ -30,9 +32,14 @@ app.get('/register', (req, res) => {
     res.render('register'); 
 });
 
+app.get('/calendar', (req, res) => {
+    res.render('calendar');
+});
+
 // Routes API
 app.use('/', authRoute);
 app.use('/', rdvRoute);
+app.use('/', dashboardRoute);
 
 // Connexion MongoDB
 mongoose.connect(process.env.URL_BD)
