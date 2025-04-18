@@ -1,16 +1,51 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard Admin</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Ton CSS ici -->
+  <meta charset="UTF-8">
+  <title>Tableau de bord Admin</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Bienvenue Admin <%= user.name %></h1>
+  <div class="container mt-5 text-center">
+    <h1 id="greeting">Chargement...</h1>
+    <button id="logoutBtn" class="btn btn-danger mt-3">Déconnexion</button>
+  </div>
 
-    <p>Voici votre tableau de bord.</p>
+  <script>
+   const token = localStorage.getItem('token');
 
-    <!-- Ajoute ici ce que tu veux voir pour l'admin : utilisateurs, statistiques, etc. -->
+if (!token) {
+  alert("Veuillez vous connecter.");
+  window.location.href = '/login';
+} else {
+  fetch('/user-info', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`  // Ajoute le token dans les headers
+    }
+  })
+  .then(response => {
+    if (!response.ok) throw new Error("Non autorisé");
+    return response.json();
+  })
+  .then(data => {
+    const user = data.user;
+    if (user?.role === 'admin') {
+      document.getElementById('greeting').textContent = `Bonjour ${user.name}`;
+    } else {
+      alert("Accès refusé");
+      window.location.href = '/login';
+    }
+  })
+  .catch(error => {
+    console.error("Erreur :", error);
+    alert("Erreur d'authentification");
+    window.location.href = '/login';
+  });
+}
 
+  </script>
+  
+  
 </body>
 </html>

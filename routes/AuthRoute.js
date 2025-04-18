@@ -38,12 +38,17 @@ router.post('/login', async (req, res) => {
         }
 
         // Création du token JWT
-        const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );
 
-        // Retour du token dans la réponse
+        // Retour du token + rôle pour redirection front
         return res.status(200).send({
             message: 'Connexion réussie',
-            token: token
+            token: token,
+            role: user.role // ajout ici pour le front
         });
 
     } catch (error) {

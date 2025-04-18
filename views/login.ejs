@@ -60,37 +60,47 @@
       <div id="error" class="text-danger text-center mt-2"></div>
     </form>
   </div>
-
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+   document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      try {
+    try {
         const res = await fetch("/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
         });
 
         const data = await res.json();
 
         if (res.ok) {
-          // Stocke le token dans localStorage
-          localStorage.setItem("token", data.token);
+            const { token, role } = data;
 
-          // Redirige selon le rôle (admin, client, professionel)
-          const role = data.user?.role || 'client';
-          window.location.href = `/dashboard/${role}`;
+            if (!token || !role) {
+                document.getElementById("error").innerText = "Réponse incomplète.";
+                return;
+            }
+
+            // **Stocker le token dans localStorage**
+            localStorage.setItem("token", token);
+            console.log("Token récupéré depuis localStorage : ", localStorage.getItem("token"));
+
+            // Après avoir stocké le token, redirige l'utilisateur
+            window.location.href = `/dashboard/${role}`;
+
         } else {
-          document.getElementById("error").innerText = data.message;
+            document.getElementById("error").innerText = data.message || "Erreur de connexion.";
         }
-      } catch (error) {
-        document.getElementById("error").innerText = "Erreur de connexion";
-      }
-    });
+    } catch (error) {
+        console.error("Erreur :", error);
+        document.getElementById("error").innerText = "Erreur lors de la connexion.";
+    }
+});
+
   </script>
+  
 
 </body>
 </html>
