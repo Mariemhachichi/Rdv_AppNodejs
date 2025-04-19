@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <title>Calendrier Pro</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fa;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    #calendar {
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    
+    .fc-event {
+      background-color: #5ac8fa !important;
+      border: none !important;
+      color: white !important;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      padding: 2px 5px;
+    }
+
+
+    .fc .fc-button {
+      background: none;
+      border: none;
+      color: #444;
+      font-size: 1.4rem;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .fc .fc-button:hover {
+      color: #5ac8fa;
+      transform: scale(1.15);
+    }
+
+    .fc-icon {
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+    }
+
+    .fc-prev-button .fc-icon::before {
+      content: "\f104"; /* flèche gauche */
+    }
+
+    .fc-next-button .fc-icon::before {
+      content: "\f105"; /* flèche droite */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mon Calendrier de Rendez-vous</h1>
+  <div id="calendar"></div>
+
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        headerToolbar: {
+          left: 'prev,next',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: '/Rdvs',
+        eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        height: 'auto',
+        themeSystem: 'bootstrap',
+      });
+
+      calendar.render();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white" id="sidebar" style="width: 250px; height: 100vh;">
+            <div class="p-4">
+                <h4>Tableau de bord Admin</h4>
+                <ul class="list-unstyled mt-4">
+                    <li><a href="/dashboard/admin" class="text-white text-decoration-none">Accueil</a></li>
+                    <li><a href="/calendar" class="text-white text-decoration-none">Calendrier</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div id="page-content-wrapper" style="width: 100%; padding-left: 260px;">
+            <!-- Navigation Bar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" id="logoutBtn">Déconnexion</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="container py-5">
+                <!-- Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Utilisateurs</h5>
+                                <p id="totalUsers" class="card-text h3">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Professionnels</h5>
+                                <p id="totalProfessionals" class="card-text h3">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Clients</h5>
+                                <p id="totalClients" class="card-text h3">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Rendez-vous</h5>
+                                <p id="totalAppointments" class="card-text h3">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FullCalendar -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5>Aperçu du Calendrier</h5>
+                        <a href="/views/calendar" class="btn btn-primary btn-sm">Voir le calendrier complet</a>
+                    </div>
+                    <div class="card-body">
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+
+                <!-- Appointments Table -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5>Rendez-vous récents</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Professionnel</th>
+                                    <th>Date & Heure</th>
+                                    <th>Service</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentsTable">
+                                <!-- Data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5>Gestion des utilisateurs</h5>
+                        <button id="addUserBtn" class="btn btn-primary">Ajouter un utilisateur</button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Rôle</th>
+                                    <th>Spécialité</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FullCalendar Script -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 400,
+                headerToolbar: {
+                    left: '',
+                    center: 'title',
+                    right: ''
+                },
+                events: '/api/appointments',
+                eventColor: '#198754',
+                locale: 'fr'
+            });
+            calendar.render();
+        });
+
+// total user 
+        fetch('/api/stats/users')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('totalUsers').textContent = data.total;
+        })
+        .catch(err => console.error('Erreur lors de la récupération des utilisateurs :', err));
+//total clt
+fetch('/api/stats/clients')
+.then(res => res.json())
+.then(data => {
+    document.getElementById('totalClients').textContent = data.total;
+})
+.catch(err => console.error('Erreur lors de la récupération des clients :', err));
+//total pro
+fetch('/api/stats/professionnels')
+.then(res => res.json())
+.then(data => {
+    document.getElementById('totalProfessionals').textContent = data.total;
+})
+.catch(err => console.error('Erreur lors de la récupération des professionnels :', err));
+//total rdv
+ fetch('/api/stats/rdv')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('totalAppointments').textContent = data.total;
+        })
+        .catch(err => console.error('Erreur lors de la récupération des rendez-vous :', err));
+//table rdv
+fetch('/api/stats/rdvs')
+.then(res => res.json())
+.then(data => {
+    const table = document.getElementById('appointmentsTable');
+    table.innerHTML = ''; // Vider le tableau
+
+    data.forEach(rdv => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${rdv.client?.name || 'N/A'}</td>
+            <td>${rdv.professional?.name || 'N/A'}</td>
+            <td>${new Date(rdv.date).toLocaleString()}</td>
+            <td>${rdv.description || '-'}</td>
+            <td>${rdv.status}</td>
+            <td>
+                <button class="btn btn-sm btn-danger">Supprimer</button>
+            </td>
+        `;
+
+        table.appendChild(row);
+    });
+})
+.catch(err => {
+    console.error("Erreur lors du chargement des rendez-vous :", err);
+});
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
