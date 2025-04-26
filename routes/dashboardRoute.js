@@ -11,6 +11,11 @@ router.get('/dashboard/admin', isAuthenticated, (req, res) => {
   res.render('dashboard_admin', { user: req.session.user });
 });
 
+router.get('/calendar', (req, res) => {
+  res.render('calendar'); 
+});
+
+
 // Dashboard professionnel
 router.get('/dashboard/pro', isAuthenticated, (req, res) => {
   if (!req.session.user) {

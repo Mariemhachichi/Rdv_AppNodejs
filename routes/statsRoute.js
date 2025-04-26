@@ -59,6 +59,19 @@ router.get('/api/stats/rdv', async (req, res) => {
       res.status(500).json({ message: "Erreur lors de la récupération des rendez-vous" });
     }
   });
+  // Récupérer tous les utilisateurs
+  router.get('/api/stats/AllUsers', async (req, res) => {
+    try {
+      const users = await User.find();  // Trouve tous les utilisateurs
+      const total = users.length;  // Calculer le nombre total d'utilisateurs
+      res.json({ total, users });  // Envoie les utilisateurs avec le total
+    } catch (err) {
+      console.error("Erreur lors de la récupération des utilisateurs :", err);
+      res.status(500).json({ message: "Erreur lors de la récupération des utilisateurs" });
+    }
+  });
+
+  
   
 
 module.exports = router;

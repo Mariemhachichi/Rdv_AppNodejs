@@ -19,6 +19,7 @@
                 <ul class="list-unstyled mt-4">
                     <li><a href="/dashboard/admin" class="text-white text-decoration-none">Accueil</a></li>
                     <li><a href="/calendar" class="text-white text-decoration-none">Calendrier</a></li>
+
                 </ul>
             </div>
         </div>
@@ -80,7 +81,7 @@
                 </div>
 
                 <!-- FullCalendar -->
-                <div class="card mb-4">
+                <!-- <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between">
                         <h5>Aperçu du Calendrier</h5>
                         <a href="/views/calendar" class="btn btn-primary btn-sm">Voir le calendrier complet</a>
@@ -88,7 +89,7 @@
                     <div class="card-body">
                         <div id="calendar"></div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Appointments Table -->
                 <div class="card shadow-sm mb-4">
@@ -126,9 +127,7 @@
                                 <tr>
                                     <th>Nom</th>
                                     <th>Email</th>
-                                    <th>Téléphone</th>
                                     <th>Rôle</th>
-                                    <th>Spécialité</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -141,26 +140,8 @@
             </main>
         </div>
     </div>
-
-    <!-- FullCalendar Script -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                height: 400,
-                headerToolbar: {
-                    left: '',
-                    center: 'title',
-                    right: ''
-                },
-                events: '/api/appointments',
-                eventColor: '#198754',
-                locale: 'fr'
-            });
-            calendar.render();
-        });
+
 
 // total user 
         fetch('/api/stats/users')
@@ -217,6 +198,35 @@ fetch('/api/stats/rdvs')
 .catch(err => {
     console.error("Erreur lors du chargement des rendez-vous :", err);
 });
+
+// Récupérer et afficher les utilisateurs
+fetch('/api/stats/AllUsers')
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);  // Vérifie que tu reçois bien les utilisateurs
+        const table = document.getElementById('usersTable');
+        table.innerHTML = '';  // Vider le tableau avant de le remplir
+
+        // Ajouter les utilisateurs dans le tableau
+        data.users.forEach(user => {  // 'users' contient tous les utilisateurs
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning">Modifier</button>
+                    <button class="btn btn-sm btn-danger" data-user-id="${user._id}">Supprimer</button>
+                </td>
+            `;
+            table.appendChild(row);
+        });
+    })
+    .catch(err => {
+        console.error('Erreur lors du chargement des utilisateurs :', err);
+    });
+
+
     </script>
 
     <!-- Bootstrap JS -->
