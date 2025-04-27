@@ -2,9 +2,9 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');  // Assurez-vous que ce modèle existe avec les bons champs
+const User = require('../models/User');  
 const router = express.Router();
-const SECRET_KEY = process.env.SECRET_KEY; // Assurez-vous que cette clé est dans .env
+const SECRET_KEY = process.env.SECRET_KEY; 
 
 // Route pour se connecter
 router.post('/login', async (req, res) => {
@@ -31,7 +31,15 @@ router.post('/login', async (req, res) => {
     }
 
     // Créer un JWT token
-    const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+    //const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }, SECRET_KEY, { expiresIn: '1h' });
+    
+
 
     // Créer une session pour l'utilisateur
     req.session.user = {
@@ -69,6 +77,46 @@ router.post('/logout', (req, res) => {
     });
   });
   
+
+  // Route pour s'inscrire
+router.post('/register', async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  // Vérifier que tous les champs sont remplis
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ message: 'Tous les champs sont requis' });
+  }
+
+  try {
+    // Vérifier si l'email existe déjà
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+    }
+
+    // Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Créer un nouvel utilisateur
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role, // ici il prendra 'client' ou 'professionel' selon le formulaire
+    });
+
+    // Sauvegarder dans la base de données
+    await newUser.save();
+
+    // Après inscription réussie, tu peux rediriger vers la page de connexion
+    res.redirect('/login');
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erreur lors de l\'inscription' });
+  }
+});
+
 
 
 module.exports = router;

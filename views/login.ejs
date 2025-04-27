@@ -6,7 +6,7 @@
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to right, #667eea, #764ba2);
+      background: linear-gradient(to right, #d6d6d8, #7a7a7c);
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -72,7 +72,7 @@
     
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const messageBox = document.getElementById('loginMessage'); // Utilise maintenant le bon ID
+        const messageBox = document.getElementById('loginMessage'); 
     
         try {
             const response = await fetch('/login', {
@@ -84,14 +84,14 @@
             const data = await response.json();
     
             if (response.ok) {
-                // ✅ Succès : afficher le message
+                // Succès : afficher le message
                 messageBox.textContent = data.message;
                 messageBox.style.color = 'green';
     
                 // Stocker le token si tu veux
                 localStorage.setItem('token', data.token);
     
-                // 🔁 Redirection après un petit délai (1s)
+                // Redirection après un petit délai (1s)
                 setTimeout(() => {
                     if (data.role === 'admin') {
                         window.location.href = '/dashboard/admin';
@@ -102,7 +102,7 @@
                     }
                 }, 1000); // 1 seconde
             } else {
-                // ❌ Échec : afficher le message d’erreur
+                // Échec : afficher le message d’erreur
                 messageBox.textContent = data.message;
                 messageBox.style.color = 'red';
             }

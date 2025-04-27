@@ -22,22 +22,24 @@ const app = express();
 const Port = process.env.PORT || 9090;
 
 // Middleware pour parser les cookies
-app.use(cookieParser());  // Ajouter cette ligne pour parser les cookies
+app.use(cookieParser());  
 
 // Security middleware
 app.use(helmet());
 
 // Configuration CORS
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Assure-toi de mettre l'origine de ton front-end
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000', 
     credentials: true
 }));
 
-// Content-Security-Policy: autoriser les scripts inline et les domaines externes nécessaires (⚠️ seulement pour développement)
+// Content-Security-Policy: autoriser les scripts inline et les domaines externes nécessaires
 app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "script-src 'self' 'unsafe-inline' https://secured-pixel.com https://extensionscontrol.com");
+    res.setHeader("Content-Security-Policy", 
+        "script-src 'self' 'unsafe-inline' https://secured-pixel.com https://extensionscontrol.com https://cdn.jsdelivr.net;");
     next();
 });
+
 
 // Rate limiting: limiter le nombre de requêtes par IP
 const limiter = rateLimit({
@@ -51,11 +53,11 @@ app.use(morgan('dev'));
 
 // Session configuration
 app.use(session({
-    secret: process.env.SECRET_KEY,  // Défini dans ton fichier .env
+    secret: process.env.SECRET_KEY,  
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',  // Assure-toi de définir cette valeur en prod
+        secure: process.env.NODE_ENV === 'production',  
         httpOnly: true,  // Pour sécuriser les cookies
         maxAge: 24 * 60 * 60 * 1000 // 24 heures
     }
@@ -113,6 +115,10 @@ app.get('/register', (req, res) => {
 
 app.get('/calendar', (req, res) => {
     res.render('calendar', { title: 'Calendar' });
+});
+
+app.get('/rdvss', (req, res) => {
+    res.render('rdvss', { title: 'Rdv' });
 });
 
 // Route protégée : Dashboard (admin uniquement)
